@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '/src/firebase.js';
+import ModalAddBook from '/src/components/ModalAddBook/ModalAddBook.jsx';
+import AddBook from '/src/components/AddBook/AddBook.jsx';
+import BookList from '/src/components/BookList.jsx';
+import { Button, Alert } from 'react-bootstrap';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [books, setBooks] = useState([]);
+    const [recommendedBook, setRecommendedBook] = useState(null);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    useEffect(() => {
+        const unsubscribe = onSnapshot(collection(db, 'books'), (snapshot) => {
+            const booksArray = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setBooks(booksArray);
+            recommendBook(booksArray);
+        });
 
-export default App
+        // Очистка подписки при размонтировании компонента
+        return () => unsubscribe();
+    }, []);
+
+    const openModal = () => setModalOpen(true);
+    const closeModal = () => setModalOpen(false);
+
+    const recommendBook = (books) => {
+        const currentYear = new Date().getFullYear();
+        const filteredBooks = books.filter(book => book.year && (currentYear - book.year >= 3));
+        if (filteredBooks.length === 0) {
+            setRecommendedBook(null);
+            return;
+        }
+
+        const maxRating = Math.max(...filteredBooks.map(book => book.rating || 0));
+        const bestBooks = filteredBooks.filter(book => book.rating === maxRating);
+
+        const randomBook = bestBooks[Math.floor(Math.random() * bestBooks.length)];
+        setRecommendedBook(randomBook);
+    };
+
+    return (
+        <div>
+            <h1>Каталог книг</h1>
+            <Button variant="primary" onClick={openModal}>Добавить книгу</Button>
+            {recommendedBook && (
+                <Alert variant="success" className="mt-3">
+                    Рекомендуемая книга: {recommendedBook.title} - {recommendedBook.authors.join(', ')}
+                </Alert>
+            )}
+            <ModalAddBook isOpen={isModalOpen} onClose={closeModal}>
+                <AddBook />
+            </ModalAddBook>
+            <BookList books={books} />
+        </div>
+    );
+};
+
+export default App;
