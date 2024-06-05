@@ -1,23 +1,25 @@
 import { useEffect, useState } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import {collection, getDocs, deleteDoc, doc, onSnapshot} from 'firebase/firestore';
+import EditBook from './EditBook';
+import {Button} from "react-bootstrap";
 
 const BookList = () => {
     const [books, setBooks] = useState([]);
 
     useEffect(() => {
-        const getBooks = async () => {
-            const querySnapshot = await getDocs(collection(db, 'books'));
+        const unsubscribe = onSnapshot(collection(db, 'books'), (querySnapshot) => {
             const booksArray = [];
             querySnapshot.forEach((doc) => {
                 booksArray.push({ id: doc.id, ...doc.data() });
             });
-            console.log('Книги:', booksArray);
+            console.log('Книги обновлены:', booksArray); // Добавлен лог для отладки
             setBooks(booksArray);
-        };
-        getBooks().catch(error => {
-            console.error("Ошибка получения позиции: ", error);
+        }, (error) => {
+            console.error("Ошибка получения обновления книг: ", error);
         });
+
+        return () => unsubscribe(); // Функция очистки подписки
     }, []);
 
     const handleDelete = async (id) => {
@@ -54,8 +56,9 @@ const BookList = () => {
                             {books.sort((a, b) => a.title.localeCompare(b.title)).map((book) => (
                                 <li key={book.id}>
                                     <strong>{book.title}</strong> - {book.authors.join(", ")}<br />
-                                    Рейтинг: {book.rating || 'N/A'}<br />
-                                    ISBN: {book.isbn || 'N/A'}<br />
+                                    Рейтинг: {book.rating || '-'}<br />
+                                    ISBN: {book.isbn || '-'}<br />
+                                    <Button onClick={() => { setShowModal(true); setEditingBookId(bookId); }}>Редактировать</Button>
                                     <button onClick={() => handleDelete(book.id)}>Удалить</button>
                                 </li>
                             ))}

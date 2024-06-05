@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { db } from '/src/firebase.js';
+import { db } from './firebase.js';
 import ModalAddBook from '/src/components/ModalAddBook/ModalAddBook.jsx';
 import AddBook from '/src/components/AddBook/AddBook.jsx';
 import BookList from '/src/components/BookList.jsx';
@@ -53,7 +53,7 @@ const App = () => {
                 </Alert>
             )}
             <ModalAddBook isOpen={isModalOpen} onClose={closeModal}>
-                <AddBook />
+                <AddBook onClose={closeModal} />
             </ModalAddBook>
             <BookList books={books} />
         </div>

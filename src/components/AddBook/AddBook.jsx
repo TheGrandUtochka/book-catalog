@@ -8,8 +8,8 @@ import './reactTags.css'
 const AddBook = () => {
     const [title, setTitle] = useState('');
     const [authors, setAuthors] = useState([]);
-    const [year, setYear] = useState('');
-    const [rating, setRating] = useState('');
+    const [year, setYear] = useState(0);
+    const [rating, setRating] = useState(0);
     const [isbn, setIsbn] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -44,11 +44,13 @@ const AddBook = () => {
             await addDoc(collection(db, 'books'), newBook);
             setTitle('');
             setAuthors([]);
-            setYear('');
-            setRating('');
+            setYear(0);
+            setRating(0);
             setIsbn('');
-            setSuccessMessage('Книга успешно добавлена. Обновите страницу!');
-            setTimeout(() => setSuccessMessage(''), 5000); // Убираем сообщение через 5 секун
+            setSuccessMessage('Книга успешно добавлена!');
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 3000);
         } catch (error) {
             console.error("Error adding document: ", error);
         }
@@ -97,6 +99,7 @@ const AddBook = () => {
                     <Form.Label>Год публикации</Form.Label>
                     <Form.Control
                         type="number"
+                        min="1800"
                         value={year}
                         onChange={(e) => setYear(e.target.value)}
                     />
