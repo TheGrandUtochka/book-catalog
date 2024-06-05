@@ -1,8 +1,13 @@
-# React + Vite
+# Каталог книг
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Описание
+Этот проект представляет собой веб-приложение для управления каталогом книг с использованием React и Firebase Firestore. Приложение позволяет пользователям добавлять книги в каталог, удалять их и получать рекомендации по книгам на основе их рейтинга и года издания.
 
-Currently, two official plugins are available:
+## Функциональность
+- **Добавление книг**: Пользователь может добавлять книги, указав название, авторов, год издания, рейтинг и ISBN.
+- **Удаление книг**: Пользователь может удалять книги из каталога.
+- **Рекомендация книг**: Приложение рекомендует книгу, изданную не менее 3 лет назад, с самым высоким рейтингом. Если несколько книг имеют одинаковый рейтинг, одна из них выбирается случайным образом.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Стек
+- **React**
+- **Firebase Firestore**
