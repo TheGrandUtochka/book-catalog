@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { db } from '../firebase';
-import {collection, getDocs, deleteDoc, doc, onSnapshot} from 'firebase/firestore';
-import EditBook from './EditBook';
-import {Button} from "react-bootstrap";
+import {collection, deleteDoc, doc, onSnapshot} from 'firebase/firestore';
 
 const BookList = () => {
     const [books, setBooks] = useState([]);
@@ -58,7 +56,6 @@ const BookList = () => {
                                     <strong>{book.title}</strong> - {book.authors.join(", ")}<br />
                                     Рейтинг: {book.rating || '-'}<br />
                                     ISBN: {book.isbn || '-'}<br />
-                                    <Button onClick={() => { setShowModal(true); setEditingBookId(bookId); }}>Редактировать</Button>
                                     <button onClick={() => handleDelete(book.id)}>Удалить</button>
                                 </li>
                             ))}
